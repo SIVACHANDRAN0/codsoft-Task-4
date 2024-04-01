@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multiple Choice Quiz App</title>
+<link rel="stylesheet" href="styles4.css">
+</head>
+<body>
+<div class="container">
+  <h1>Multiple Choice Quiz App</h1>
+  <div id="homeScreen">
+    <h2>Available Quizzes</h2>
+    <ul id="quizList">
+      <li><a href="#" onclick="startQuiz('quiz1')">Quiz 1</a></li>
+      <li><a href="#" onclick="startQuiz('quiz2')">Quiz 2</a></li>
+      <!-- Add more quizzes as needed -->
+    </ul>
+  </div>
+  <div id="quizScreen" style="display: none;">
+    <h2 id="quizTitle"></h2>
+    <div id="questionContainer"></div>
+    <button onclick="submitAnswer()">Submit Answer</button>
+    <div id="feedback"></div>
+    <div id="score"></div>
+  </div>
+</div>
+
+<script>
+// Quiz data
+const quizzes = {
+  quiz1: {
+    title: "Quiz 1",
+    questions: [
+      { question: "What is the capital of France?", options: ["Paris", "London", "Berlin", "Rome"], answer: 0 },
+      { question: "What is the largest planet in our solar system?", options: ["Earth", "Mars", "Jupiter", "Saturn"], answer: 2 },
+      // Add more questions as needed
+    ]
+  },
+  quiz2: {
+    title: "Quiz 2",
+    questions: [
+      { question: "What is the capital of Japan?", options: ["Tokyo", "Beijing", "Seoul", "Bangkok"], answer: 0 },
+      { question: "What is the chemical symbol for water?", options: ["O", "H2", "H2O", "CO2"], answer: 2 },
+      // Add more questions as needed
+    ]
+  }
+  // Add more quizzes as needed
+};
+
+let currentQuiz = null;
+let currentQuestionIndex = 0;
+let score = 0;
+
+// Function to start a quiz
+function startQuiz(quizName) {
+  currentQuiz = quizzes[quizName];
+  currentQuestionIndex = 0;
+  score = 0;
+  showNextQuestion();
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('quizScreen').style.display = 'block';
+}
+
+// Function to show the next question
+function showNextQuestion() {
+  const questionContainer = document.getElementById('questionContainer');
+  questionContainer.innerHTML = '';
+  if (currentQuestionIndex < currentQuiz.questions.length) {
+    const questionData = currentQuiz.questions[currentQuestionIndex];
+    const questionElement = document.createElement('div');
+    questionElement.classList.add('question');
+    questionElement.innerHTML = `
+      <p>${questionData.question}</p>
+      <ul>
+        ${questionData.options.map((option, index) => `<li><input type="radio" name="answer" value="${index}">${option}</li>`).join('')}
+      </ul>`;
+    questionContainer.appendChild(questionElement);
+  } else {
+    showResult();
+  }
+}
+
+// Function to submit an answer
+function submitAnswer() {
+  const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+  if (selectedAnswer) {
+    const answerIndex = parseInt(selectedAnswer.value);
+    if (answerIndex === currentQuiz.questions[currentQuestionIndex].answer) {
+      score++;
+      document.getElementById('feedback').textContent = "Correct!";
+    } else {
+      document.getElementById('feedback').textContent = "Incorrect!";
+    }
+    currentQuestionIndex++;
+    showNextQuestion();
+    updateScore();
+  } else {
+    alert("Please select an answer!");
+  }
+}
+
+// Function to show the quiz result
+function showResult() {
+  const quizScreen = document.getElementById('quizScreen');
+  quizScreen.innerHTML = '';
+  const resultElement = document.createElement('div');
+  resultElement.innerHTML = `
+    <h2>Quiz Result</h2>
+    <p>Your score: ${score}/${currentQuiz.questions.length}</p>
+    <button onclick="location.reload()">Try Another Quiz</button>`;
+  quizScreen.appendChild(resultElement);
+}
+
+// Function to update the score display
+function updateScore() {
+  document.getElementById('score').textContent = `Score: ${score}/${currentQuiz.questions.length}`;
+}
+</script>
+</body>
+</html>
